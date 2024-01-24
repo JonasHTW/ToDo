@@ -289,11 +289,11 @@ Lösche eine existierende *liste* und die dazugehörigen *todos*.
 
 ### Todo Ressourcen
   - [GET api/todos](#get-apitodos)
-  - [GET api/lists/:id](#get-apitodosid)
+  - [GET api/todos/:id](#get-apitodosid)
   - [POST api/todos](#post-apitodos)
-  - [PUT api/lists/:id](#put-apitodosid)
-  - [PATCH api/lists/:id](#patch-apitodosid)
-  - [DELETE api/lists/:id](#delete-apitodos)
+  - [PUT api/todos/:id](#put-apitodosid)
+  - [PATCH api/todos/:id](#patch-apitodosid)
+  - [DELETE api/todos/:id](#delete-apitodos)
 
 ### GET /api/todos
 Listet alle *todos* auf.
