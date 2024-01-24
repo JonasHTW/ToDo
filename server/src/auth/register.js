@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const User = require("../dbmodels/user");
+const userPermissions = [];
 
 router.post("/", (req, res) => {
 
@@ -30,7 +31,7 @@ router.post("/", (req, res) => {
             return newUser.save();
         })
         .then(savedUser => {
-            const token = jwt.sign({ userId: savedUser._id }, process.env.MY_SECRET, { expiresIn: "1h" });
+            const token = jwt.sign({ userId: savedUser._id , permissions: userPermissions }, process.env.MY_SECRET, { expiresIn: "1h" });
             const decodedToken = jwt.verify(token, process.env.MY_SECRET);
             const userId = decodedToken.userId;
             console.log("userId: ", userId);
