@@ -52,18 +52,19 @@ mit dem Passwort "test" einen validen token erhalten.
 
 ## Endpunkte
 | Methode | Endpunkt | Beschreibung |
-
 | --- | --- | --- |
 | `POST` | `auth/register` | Erstelle einen neuen *benutzer* |
 | `POST` | `auth/login` | Melde einen *benutzer* an |
 
+| Methode | Endpunkt | Beschreibung |
 | --- | --- | --- |
 | `GET` | `api/lists` | Listet alle *lists* |
 | `GET` | `api/lists/:id` | Hole eine spezifische *liste* |
 | `POST` | `api/lists` | Erstelle eine neue *liste* |
-| `PUT` | `api/lists/:id` | Editiere den Namen einer existierenden *liste* oder ordne Ihre *todos* neu |
+| `PUT` | `api/lists/:id` | Editiere den Namen einer existierenden *liste* oder ordne ihre *todos* neu |
 | `DELETE` | `api/lists/:id` | Lösche eine existierende *liste* und die dazugehörigen *todos* |
 
+| Methode | Endpunkt | Beschreibung |
 | --- | --- | --- |
 | `GET` | `api/todos` | Listet alle *todos* |
 | `POST` | `api/todos` | Erstelle ein neues *todo* |
@@ -71,6 +72,7 @@ mit dem Passwort "test" einen validen token erhalten.
 | `PUT` | `api/todos/:id` | Editiere ein existierendes *todo* |
 | `PATCH` | `api/todos/:id` | Markiere ein *todo* als fertig |
 | `DELETE` | `api/todos/:id` | Lösche ein existierendes *todo* |
+
 
 
 ## Dokumentation
