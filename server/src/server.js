@@ -34,4 +34,10 @@ app.listen(port, () => {
   console.log(`listening to http://localhost:${port}`)
 });
 
+//Dokumentation
+const yaml = require('yamljs');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = yaml.load(path.resolve(__dirname, '../openapi.yaml'));
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 module.exports = mongoose;

@@ -17,7 +17,7 @@ router.get('/', authenticateToken, (req, res) => {
         .catch(error => {
             res.status(500).json({ 'status': 'Error', 'error': error.message });
         });
-    
+
 });
 
 // Erhalte eine Liste anhand der id
@@ -93,39 +93,59 @@ router.put('/:listId', async (req, res) => {
     // Verbiete das Verändern von _id, todos und user
     const { _id, todos, user, ...updateData } = req.body;
 
-    // Verändere die Reihenfolge des Arrays (neu anordnen)
-    try {
-        const list = await List.findOne({ _id: listId });
-        if (!list) {
-            return res.status(404).json({ 'status': 'Error', 'message': 'List not found' });
+    if (todoId && index !== undefined) {
+        // Verbiete das Verändern von _id, todos und user
+        const { _id, todos, user, ...updateData } = req.body;
+
+        // Verändere die Reihenfolge des Arrays (neu anordnen)
+        try {
+            const list = await List.findOne({ _id: listId });
+            if (!list) {
+                return res.status(404).json({ 'status': 'Error', 'message': 'List not found' });
+            }
+
+            const indexOfTodo = list.todos.indexOf(todoId);
+            if (indexOfTodo === -1) {
+                return res.status(404).json({ 'status': 'Error', 'message': 'todoId not valid' });
+            }
+
+            if (index >= list.todos.length || index < 0 || typeof index !== 'number' || index === indexOfTodo) {
+                return res.status(404).json({ 'status': 'Error', 'message': 'Given index or Id not valid' });
+            }
+
+            const it = list.todos[index];
+            list.todos[index] = list.todos[indexOfTodo];
+            list.todos[indexOfTodo] = it;
+
+            await list.save();
+
+            return res.status(200).json({ 'status': 'Success', 'message': `Todo moved to ${index}` });
+        } catch (error) {
+            return res.status(500).json({ 'status': 'Error', 'error': error.message });
         }
-
-        const indexOfTodo = list.todos.indexOf(todoId);
-        if (indexOfTodo === -1) {
-            return res.status(404).json({ 'status': 'Error', 'message': 'todoId not valid' });
-        }
-
-        if (index >= list.todos.length || index < 0 || typeof index !== 'number' || index === indexOfTodo) {
-            return res.status(404).json({ 'status': 'Error', 'message': 'Given index or Id not valid' });
-        }
-
-        const it = list.todos[index];
-        list.todos[index] = list.todos[indexOfTodo];
-        list.todos[indexOfTodo] = it;
-
-        await list.save();
-
-        return res.status(200).json({ 'status': 'Success', 'message': `Todo moved to ${index}` });
-    } catch (error) {
-        return res.status(500).json({ 'status': 'Error', 'error': error.message });
     }
 
-    // TODO
-    // ordnen von Listen ermöglicht 
-    // -> authenticateToken im Rest implementieren
-    // Auf github hochladen, readme schreiben, eric senden
-    // das hier löschen
+    // Überprüfe, ob "title" im req.body vorhanden ist
+    if ('title' in req.body) {
+        try {
+            const updatedList = await List.findOneAndUpdate(
+                { _id: listId },
+                { $set: { title: req.body.title } },
+                { new: true }
+            );
 
+            if (!updatedList) {
+                return res.status(404).json({ 'status': 'Error', 'message': 'List not found' });
+            }
+
+            return res.status(200).json({ 'status': 'Success', 'message': 'List title updated' });
+        } catch (error) {
+            return res.status(500).json({ 'status': 'Error', 'error': error.message });
+        }
+    }
+
+    // Wenn weder "title" noch ("todoId" und "index") im req.body vorhanden sind
+    return res.status(400).json({ 'status': 'Error', 'message': 'Invalid request body' });
 
 });
 
@@ -136,21 +156,22 @@ router.delete('/:listId', async (req, res) => {
 
     const listId = req.params.listId;
 
-    List.findByIdAndDelete(listId)
-        .then(deletedList => {
-            if (!deletedList) {
-                return res.status(404).json({ 'status': 'Error', 'message': 'List not found' });
-            }
+    try {
+        const listId = req.params.listId;
 
-            // Finde und lösche alle Todos, die zur gelöschten Liste gehören
-            return Todo.deleteMany({ list: listId });
-        })
-        .then(() => {
-            res.status(200).json({ 'status': 'Success', 'message': 'List deleted along with associated Todos' });
-        })
-        .catch(error => {
-            res.status(500).json({ 'status': 'Error', 'error': error });
-        });
+        const deletedList = await List.findByIdAndDelete(listId);
+
+        if (!deletedList) {
+            return res.status(404).json({ 'status': 'Error', 'message': 'List not found' });
+        }
+
+        // Finde und lösche alle Todos, die zur gelöschten Liste gehören
+        await Todo.deleteMany({ list: listId });
+
+        res.status(200).json({ 'status': 'Success', 'message': 'List deleted along with associated Todos' });
+    } catch (error) {
+        res.status(500).json({ 'status': 'Error', 'error': error.message });
+    }
 });
 
 router.use('/todos', todos);

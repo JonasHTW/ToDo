@@ -104,10 +104,10 @@ router.put('/:id', authenticateToken, (req, res) => {
         // Wenn "list" nicht im req.body ist, aktualisiere einfach die Todo
         Todo.findOneAndUpdate({ _id: todoId, user: req.userId }, updateData, { new: true })
             .then(updatedTodo => {
-                res.status(200).json({ 'status': 'Success', 'todo': updatedTodo });
+                res.status(200).json({ status: 'Success', 'todo': updatedTodo });
             })
             .catch(error => {
-                res.status(500).json({ 'status': 'Error', 'error': error });
+                res.status(500).json({ status: 'Error', 'error': error });
             });
     }
 });
@@ -121,11 +121,12 @@ router.patch('/:id', authenticateToken, (req, res) => {
 
     Todo.findOneAndUpdate({ _id: todoId, user: req.userId }, { completed: true }, { new: true })
         .then(updatedTodo => {
-            res.status(200).json({ 'status': 'Success', 'Todo': updatedTodo });
+            res.status(200).json({ status: 'Success', 'Todo': updatedTodo });
         })
         .catch(
-            error => { res.status(500).json({ 'status': 'Error', 'error': error }); }
-        )
+            error => {
+                res.status(500).json({ status: 'Error', 'error': error });
+            })
 
 });
 
