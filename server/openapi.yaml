@@ -9,8 +9,23 @@ paths:
     post:
       summary: Register a new user
       operationId: userRegister
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
       responses:
-        200:
+        201:
           description: Successfully registered a new user
           content:
             application/json:
@@ -34,6 +49,21 @@ paths:
     post:
       summary: Login as a user
       operationId: userLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
       responses:
         200:
           description: Successfully logged in as user
@@ -70,6 +100,189 @@ paths:
           description: OK
           content:
             '*/*': {}
+  /api/lists:
+    get:
+      summary: Get all lists
+      operationId: listsGetAll
+      responses:
+        200:
+          description: all lists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Success"
+                  lists:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/List'
+    post:
+      summary: Create a new list
+      operationId: listCreate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+                todos:
+                  type: array
+                  items:
+                    type: string
+                    example: 65b138a6ad0d8ba23573e01e
+      responses:
+        201:
+          description: The created Todo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Success"
+                  List:
+                    $ref: '#/components/schemas/List'
+        500:
+          description: "Internal server error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/lists/{id}:
+    get:
+      summary: Get one list
+      operationId: listGetOne
+      parameters:
+      - name: id
+        in: path
+        description: The id of the list
+        required: true
+        schema:
+          format: String
+        example: 65b138c4ad0d8ba23573e020
+      responses:
+        200:
+          description: The requested List
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Success"
+                  todo:
+                    $ref: '#/components/schemas/List'
+        404:
+          description: No List found with listId
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Success"
+                  message:
+                    type: string
+                    example: "No List found with listId"
+        500:
+          description: "Internal server error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      summary: Update a List by ID
+      operationId: updateListById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the List to update
+          schema:
+            type: string  
+            example: 65b0ed15ee1cb12b2614b38b
+      requestBody:
+        description: The updated List
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                todoId:
+                  type: string
+                  example: 65b0ed15ee1cb12b2614b382
+                index:
+                  type: integer
+                  example: 0
+      responses:
+        200:
+          description: The updated List
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Success"
+                  todo:
+                    $ref: '#/components/schemas/List'
+        404:
+          description: List not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: "Internal server error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      summary: Delete one List and its todos
+      operationId: listDeleteOne
+      parameters:
+      - name: id
+        in: path
+        description: The id of the list
+        required: true
+        schema:
+          type: string
+          example: 65b0ed15ee1cb12b2614b38b
+      responses:
+        204:
+          description: List deleted along with associated Todos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        404:
+          description: List not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /api/todos:
     get:
       summary: Get the list of all Todos
@@ -87,33 +300,35 @@ paths:
       summary: Create a new todo
       operationId: todoCreate
       requestBody:
-        description: The todo to create
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Todo'
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                list:
+                  type: string
+                  example: 65b138a6ad0d8ba23573e01e
       responses:
         201:
           description: The created Todo
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Todo'
-    delete:
-      summary: Delete the all todos that are completed
-      operationId: todoDeleteCompleted
-      responses:
-        204:
-          description: No content
-    options:
-      summary: Get the options
-      operationId: todoOpt
-      responses:
-        200:
-          description: OK
-          content:
-            application/json: {}
-  /api/{id}:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Success"
+                  todo:
+                    $ref: '#/components/schemas/Todo'
+  /api/todos/{id}:
     get:
       summary: Get one todo
       operationId: todoGetOne
@@ -123,18 +338,93 @@ paths:
         description: The id of the todo
         required: true
         schema:
-          format: int64
-          type: integer
-        example: 42
+          format: String
+        example: 65b138c4ad0d8ba23573e020
       responses:
         200:
           description: The requested Todo
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Todo'
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Success"
+                  todo:
+                    $ref: '#/components/schemas/Todo'
+        404:
+          description: No Todo found with todoId
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Success"
+                  message:
+                    type: string
+                    example: "No Todo found with todoId"
+        500:
+          description: "Internal server error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      summary: Update a Todo by ID
+      operationId: updateTodoById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the Todo to update
+          schema:
+            type: string  
+            example: 65b0ed15ee1cb12b2614b38b
+      requestBody:
+        description: The updated todo
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                list:
+                  type: string
+                  example: 65b0ed15ee1cb12b2614b389
+      responses:
+        200:
+          description: The updated Todo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Success"
+                  todo:
+                    $ref: '#/components/schemas/Todo'
+        404:
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: "Internal server error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
-      summary: Delete one todo
+      summary: Delete one todo and its references
       operationId: todoDeleteOne
       parameters:
       - name: id
@@ -142,14 +432,29 @@ paths:
         description: The id of the todo
         required: true
         schema:
-          format: int64
-          type: integer
-        example: 42
+          type: string
+          example: 65b0ed15ee1cb12b2614b38b
       responses:
         204:
-          description: No content
+          description: Todo successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        404:
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     patch:
-      summary: Update an existing todo
+      summary: Complete an existing todo
       operationId: todoUpdate
       parameters:
       - name: id
@@ -157,22 +462,37 @@ paths:
         description: The id of the todo
         required: true
         schema:
-          format: int64
-          type: integer
-        example: 42
-      requestBody:
-        description: The todo to update
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Todo'
+          type: string
+          example: 65b0ed15ee1cb12b2614b38b
       responses:
         200:
           description: The updated Todo
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Todo'
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Success"
+                  todo:
+                    $ref: '#/components/schemas/Todo'
+              example:
+                value:
+                  status: "Success"
+                  todo:
+                    id: 6123456789abcdef01234567
+                    title: "My task"
+                    description: "Description of my task"
+                    completed: true
+                    list: 65b0ed15ee1cb12b2614b389
+                    user: 65b0ed15ee1cb12b2614b37f
+        500:
+          description: "Internal server error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   securitySchemes:
     bearerAuth:            
@@ -212,10 +532,6 @@ components:
           items:
             type: string
             example: "6123456789abcdef01234567"
-        list:
-          description: reference to a List entity
-          type: string
-          example: "6123443589abcgth01296547"
         user:
           description: _id of the associated User
           type: string
@@ -232,6 +548,10 @@ components:
           description: title of the todo
           type: string
           example: My task
+        description:
+          description: description of the todo
+          type: string
+          example: Description of my task
         completed:
           description: whether the todo is completed or not
           type: boolean
@@ -252,9 +572,13 @@ components:
           example: Error
         message:
           type: string
+    SuccessResponse:
+      type: "object"
+      properties:
+        status: 
+          type: string
+          example: Success
+        message:
+          type: string
 security:
   - bearerAuth: []
-
-
-    
-
