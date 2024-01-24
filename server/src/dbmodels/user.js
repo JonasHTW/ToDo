@@ -1,10 +1,6 @@
 const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-    },
     email: {
         type: String,
         required: true,
@@ -12,7 +8,8 @@ const userSchema = mongoose.Schema({
     pwHash:{
         type: String,
         required: true,
-    }
-})
+    },
+    lists: [{ type: mongoose.Schema.Types.ObjectId, ref: 'List' }]
+});
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("user", userSchema);

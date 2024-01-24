@@ -1,29 +1,38 @@
-const jwt = require("jsonwebtoken");
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const crypto = require("crypto");
+const router = express.Router();
+const User = require("../dbmodels/user");
 
-const getUser = async (username) => {
-    return { userId: 5, password: "123", username };
-};
+router.post("/", (req, res) => {
 
-module.exports = async (req, res) => {
-    const { username, password } = req.body;
+    console.log((new Date()).toISOString(), req.method);
 
-    const user = await getUser(username);
+    const { email } = req.body;
 
-    if (user.password !== password) {
-        return res.status(403).json({
-            error: "Invalid login",
-        });
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ status: "Error", message: 'Ungültiges E-Mail-Format.' });
     }
 
+    User.findOne({ email })
+        .then(existingUser => {
+            if (!existingUser) {
+                return res.status(404).json({ status: "Error", message: 'E-Mail nicht gefunden.' });
+            }
+            hashedPw = crypto.createHash('sha256').update(req.body.password).digest('hex');
 
-    delete user.password;
+            if (existingUser.pwHash === hashedPw) {
+                const token = jwt.sign({ userId: existingUser._id }, process.env.MY_SECRET, { expiresIn: "1h" });
+                res.status(200).json({ status: "Success", message: 'Benutzer erfolgreich angemeldet', token: token });
+            } else {
+                res.status(401).json({ status: "Error", message: 'Kein Zugriff möglich' });
+            }
+        })
+        .catch(error => {
+            console.error('Fehler beim Benutzerlogin:', error);
+            res.status(500).json({ status: "Error", message: 'Interner Serverfehler beim Login' });
+        });
+});
 
-    const token = jwt.sign(user, process.env.MY_SECRET, { expiresIn: "1h" });
-
-    res.cookie("token", token, {
-        httpOnly: true,
-    });
-
-    return res.redirect("/welcome");
-
-}
+module.exports = router;

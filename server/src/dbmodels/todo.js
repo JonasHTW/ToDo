@@ -6,13 +6,18 @@ const todoSchema = mongoose.Schema({
         required: true,
     },
     description: {
-        type: String,
+        type: String
     },
-    completed:{
+    completed: {
         type: Boolean,
-        required: true,
-        default: false,
-    }
+        default: false
+    },
+    list: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'List',
+    },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 });
 
 module.exports = mongoose.model("Todo", todoSchema);
+module.exports = mongoose.model("todo", todoSchema);

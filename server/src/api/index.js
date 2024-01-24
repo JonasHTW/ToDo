@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const lists = require('./lists')
+const lists = require('./lists');
+const todos = require("./todos");
 
 router.get('/', (req, res) => {
     res.json({
@@ -10,5 +11,6 @@ router.get('/', (req, res) => {
 });
 
 router.use('/lists', lists);
+router.use('/todos', todos);
 
 module.exports = router;

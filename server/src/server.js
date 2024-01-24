@@ -1,110 +1,63 @@
+const mongoose = require("mongoose");
 const express = require('express');
 const path = require("path");
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const loginRoute = require("./auth/login");
-const addRoute = require("./auth/add");
-const { JwtAuth } = require("./jwt/JwtAuth");
-const api = require('./api');
-
 require('dotenv').config();
-console.log(process.env);
+const api = require('./api');
+const auth = require('./auth');
+const cors = require("cors");
+const initiateScript = require('./initiate/initiate');
+
+// modelle
+const User = require("./dbmodels/user");
+const List = require("./dbmodels/list");
+const Todo = require("./dbmodels/todo");
 
 const app = express();
 const port = 81;
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(express.json());
 
-
-// **** test db ****
-const mongoose = require("mongoose");
-const url = 'mongodb://localhost:27017/meineDatenbank';
-
-// Beispiel: Ein einfaches Mongoose-Modell erstellen
-const BeispielSchema = new mongoose.Schema({
-  name: String,
-  alter: Number,
-  tasks: Array
-});
-
-// Ein Model aus dem Schema erstellen
-const BeispielModel = mongoose.model('Beispiel', BeispielSchema);
 
 // Verbindung zu MongoDB herstellen
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log('Erfolgreich mit der Datenbank verbunden');
+mongoose.connect(process.env.URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
-    // Hier kannst du deine Mongoose-Modelle und Operationen hinzufügen
-
-    
-
-    // Beispiel-Dokument erstellen und in die Datenbank speichern
-    const beispielDokument = new BeispielModel({ name: 'Beispiel', alter: 25 });
-    beispielDokument.save()
-      .then((doc) => {
-        console.log('Dokument erfolgreich gespeichert:', doc);
-      })
-      .catch((err) => {
-        console.error('Fehler beim Speichern des Dokuments:', err);
-      });
-
-    // ... Weitere Operationen können hier durchgeführt werden
-  })
-  .catch((err) => {
-    console.error('Verbindungsfehler:', err);
-  });
-
-
-// app.get('/', (req, res) => {
-//    res.json({
-//        message: "Willkommen"
-//    });
-//});
-
+// DB befüllen
+initiateScript();
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, "../public/register.html"));
+  res.sendFile(path.join(__dirname, "../public/register.html"));
 });
 
 
 app.get('/welcome', (req, res) => {
-    res.sendFile(path.join(__dirname, "../public/welcome.html"));
+  res.sendFile(path.join(__dirname, "../public/welcome.html"));
 });
 
-app.get('/find', (req, res) => {
+app.get('/find', async (req, res) => {
 
-  // Alle Dokumente in der Sammlung abfragen
-  BeispielModel.find({})
-  .then((alleDokumente) => {
+  // Alle Dokumente in der Benutzer-Sammlung abfragen
+  const alleBenutzer = await User.find({});
 
-    res.json({
-      alleDokumente,
-    });
-  
-  })
-  .catch((err) => {
-    res.json({
-      err,
-    });
-  })
-  .finally(() => {
-    // Schließe die Verbindung nach der Abfrage
-    mongoose.connection.close();
+  res.json({
+    alleBenutzer,
   });
 
 });
 
-app.post('/login', loginRoute);
-app.post('/add', JwtAuth, addRoute);
+//app.post('/login', loginRoute);
+//app.post('/add', JwtAuth, addRoute);
 
-
+app.use('/auth', auth);
 app.use('/api', api);
+app.use(cors());
 
 // app.post("auth/login", loginRoute);
 
 
 app.listen(port, () => {
-    console.log(`listening to http://localhost:${port}`)
+  console.log(`listening to http://localhost:${port}`)
 });
+
+module.exports = mongoose;

@@ -1,0 +1,75 @@
+mongod --port 27017 --dbpath "C:\MongoDB\data\db"
+
+mongod --remove
+
+
+user1Data.save()
+            .then((user) => {
+                console.log('User aus Initiate erfolgreich gespeichert:', user);
+            })
+            .catch((err) => {
+                console.error('Fehler beim Speichern des Dokuments:', err);
+            });
+
+
+router.put('/:listId', async (req, res) => {
+    const listId = req.params.listId;
+    const updateData = req.body;
+
+    const aktualisierteListe = await List.findByIdAndUpdate(listId, updateData, { new: true })
+
+
+    console.log("Liste aktualisiert:", aktualisierteListe);
+    console.log(
+        (new Date()).toISOString(),
+        req.method,
+        req.baseUrl
+    );
+
+    if (!aktualisierteListe) {
+        return res.status(404).json({ message: 'Liste nicht gefunden' });
+    }
+
+    res.json({
+        liste: aktualisierteListe,
+    });
+
+});
+
+router.get('/:listId', async (req, res) => {
+    const listId = req.params.listId;
+
+    const gefundeneListe = await List.findById(listId);
+
+    if (!gefundeneListe) {
+        return res.status(404).json({ message: 'Liste nicht gefunden' });
+    }
+
+    res.json({
+        liste: gefundeneListe,
+    });
+});
+
+todo 65af96f13c01a035ac376302
+liste 65af96f13c01a035ac376300
+
+
+listSchema.pre('updateOne', async function () {
+    const originalList = await this.model.findOne(this.getQuery());
+    const updatedList = this.getUpdate();
+
+    if (originalList.todos.length !== updatedList.$pull.todos.$in.length) {
+        const removedTodoId = originalList.todos.find(id => !updatedList.$pull.todos.$in.includes(id));
+        await mongoose.model('Todo').updateOne({ _id: removedTodoId }, { $unset: { list: 1 } });
+    }
+});
+
+
+    
+
+    List.findOneAndUpdate({ _id: listId }, { ...updateData, }, { new: true })
+        .then(
+            updatedList => { res.status(200).json({ 'status': 'Success', 'list': updatedList }); })
+        .catch(
+            error => { res.status(500).json({ 'status': 'Error', 'error': error }); }
+        )
