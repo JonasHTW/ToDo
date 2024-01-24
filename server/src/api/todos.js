@@ -56,59 +56,40 @@ router.post('/', authenticateToken, (req, res) => {
 });
 
 // Aktualisiere eine Todo anhand der id
-router.put('/:id', authenticateToken, (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
 
     console.log((new Date()).toISOString(), req.method);
 
     const todoId = req.params.id;
 
-    // verbiete das Verändern der _id sowie des users
+    // Verbiete das Verändern der _id sowie des users
     const { _id, user, ...updateData } = req.body;
 
-    if (updateData.list) {
+    try {
+        if (updateData.list) {
+            // Überprüfe, ob die Liste mit der übergebenen ID existiert
+            const newList = await List.findOne({ _id: updateData.list, user: req.userId });
+    
+            if (!newList) {
+                return res.status(404).json({ status: 'Error', 'message': 'List not found' });
+            }
+    
+            // Verwende $pull, um die Todo-Referenz direkt aus dem Array zu entfernen
+            await List.updateMany(
+                { todos: todoId },
+                { $pull: { todos: todoId } }
+            );
+    
+            // Füge die Todo-Referenz zur neuen Liste hinzu
+            await List.updateOne({ _id: updateData.list }, { $addToSet: { todos: todoId } });
+        }
 
-        // Überprüfe, ob die Liste mit der übergebenen ID existiert
-        List.findById({ _id: updateData.list, user: req.userId })
-            .then((newList) => {
-                if (!newList) {
-                    return res.status(404).json({ 'status': 'Error', 'message': 'List not found' });
-                }
+        // Aktualisiere die Todo
+        const updatedTodo = await Todo.findOneAndUpdate({ _id: todoId, user: req.userId }, updateData, { new: true });
 
-                // Entferne die Todo-Referenz aus der alten Liste
-                List.updateOne({ _id: updateData.list, user: req.userId }, { $pull: { todos: todoId } })
-                    .then(() => {
-                        // Füge die Todo-Referenz zur neuen Liste hinzu
-                        List.updateOne({ _id: updateData.list }, { $addToSet: { todos: todoId } })
-                            .then(() => {
-                                // Aktualisiere die Todo
-                                Todo.findOneAndUpdate({ _id: todoId, user: req.userId }, updateData, { new: true })
-                                    .then(updatedTodo => {
-                                        res.status(200).json({ 'status': 'Success', 'todo': updatedTodo });
-                                    })
-                                    .catch(error => {
-                                        res.status(500).json({ 'status': 'Error', 'error': error });
-                                    });
-                            })
-                            .catch(error => {
-                                res.status(500).json({ 'status': 'Error', 'error': error });
-                            });
-                    })
-                    .catch(error => {
-                        res.status(500).json({ 'status': 'Error', 'error': error });
-                    });
-            })
-            .catch(error => {
-                res.status(500).json({ 'status': 'Error', 'error': error });
-            });
-    } else {
-        // Wenn "list" nicht im req.body ist, aktualisiere einfach die Todo
-        Todo.findOneAndUpdate({ _id: todoId, user: req.userId }, updateData, { new: true })
-            .then(updatedTodo => {
-                res.status(200).json({ status: 'Success', 'todo': updatedTodo });
-            })
-            .catch(error => {
-                res.status(500).json({ status: 'Error', 'error': error });
-            });
+        res.status(200).json({ 'status': 'Success', 'todo': updatedTodo });
+    } catch (error) {
+        res.status(500).json({ 'status': 'Error', 'error': error.message });
     }
 });
 

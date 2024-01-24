@@ -18,7 +18,15 @@ app.use(express.json());
 mongoose.connect(process.env.URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // DB befüllen
-initiateScript();
+const User = require('./dbmodels/user');
+User.findOne().then(foundUser => {
+  if (!foundUser) {
+    initiateScript();
+  }
+})
+
+
+
 
 app.get('/', (req, res) => {
   res.json({

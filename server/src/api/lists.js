@@ -69,6 +69,20 @@ router.post('/', authenticateToken, async (req, res) => {
     const listData = req.body;
     listData.user = req.userId;
 
+    if (listData.todos && Array.isArray(listData.todos)) {
+        
+        const validTodoIds = listData.todos.filter(todoId => typeof todoId === 'string');
+
+        try {
+            const existingTodos = await Todo.find({ _id: { $in: validTodoIds }, user: req.userId });
+            const existingTodoIds = existingTodos.map(todo => todo._id.toString());
+
+            listData.todos = existingTodoIds;
+        } catch (error) {
+            return res.status(500).json({ 'status': 'Error', 'error': error.message });
+        }
+    }
+
     const createdList = new List(listData);
 
     createdList.save()
