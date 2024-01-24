@@ -67,8 +67,8 @@ mit dem Passwort "test" einen validen token erhalten.
 | Methode | Endpunkt | Beschreibung |
 | --- | --- | --- |
 | `GET` | `api/todos` | Listet alle *todos* |
-| `POST` | `api/todos` | Erstelle ein neues *todo* |
 | `GET` | `api/todos/:id` | Hole ein spezifisches *todo* |
+| `POST` | `api/todos` | Erstelle ein neues *todo* |
 | `PUT` | `api/todos/:id` | Editiere ein existierendes *todo* |
 | `PATCH` | `api/todos/:id` | Markiere ein *todo* als fertig |
 | `DELETE` | `api/todos/:id` | Lösche ein existierendes *todo* |
@@ -97,16 +97,14 @@ Einen *benutzer* erstellen.
     "password": "test"
 }
 ```
-
 #### Response
 ```javascript
 {
     "status": "Success",
     "message": "Benutzer erfolgreich registriert" ,
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+    "token": "TOKEN"
 }
 ```
-
 
 
 ### POST /auth/login
@@ -120,13 +118,12 @@ Einen *benutzer* anmelden.
     "password": "test"
 }
 ```
-
 #### Response
 ```javascript
 {
     "status": "Success",
     "message": "Benutzer erfolgreich angemeldet" ,
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+    "token": "TOKEN"
 }
 ```
 
@@ -137,26 +134,358 @@ Einen *benutzer* anmelden.
   - [GET api/lists](#get-apilists)
   - [GET api/lists/:id](#get-apilistsid)
   - [POST api/lists](#post-apilists)
-  - [PUT api/lists/:id](#put-apilists:id)
+  - [PUT api/lists/:id](#put-apilistsid)
   - [DELETE api/lists/:id](#delete-apilists)
 
-### POST /auth/register
-Einen *benutzer* erstellen.
+### GET /api/lists
+Listet alle *lists* auf.
 #### URL
-`http://localhost:81/auth/register`
-#### Request Body
-```javascript
+`http://localhost:81/api/lists`
+#### Request Header
+```json
 {
-    "email": "benutzer1@example.com",
-    "password": "test"
+    "Authorization": "Bearer TOKEN"
+}
+```
+#### Response
+```json
+{
+    "status": "Success",
+    "list": [
+        {
+            "_id": "65b0ed15ee1cb12b2614b381",
+            "title": "Studium",
+            "todos": [
+                "65b0ed15ee1cb12b2614b383",
+                "65b0ed15ee1cb12b2614b384"
+            ],
+            "user": "65b0ed15ee1cb12b2614b37f",
+            "__v": 1
+        },
+        {
+            "_id": "65b0ed15ee1cb12b2614b389",
+            "title": "Arbeit",
+            "todos": [
+                "65b0ed15ee1cb12b2614b38b"
+            ],
+            "user": "65b0ed15ee1cb12b2614b37f",
+            "__v": 1
+        }
+    ]
 }
 ```
 
+
+### GET /api/lists/:id
+Hole eine spezifische *liste*.
+#### URL
+`http://localhost:81/api/lists/:id`
+#### Request Header
+```json
+{
+    "Authorization": "TOKEN"
+}
+```
 #### Response
-```javascript
+```json
 {
     "status": "Success",
-    "message": "Benutzer erfolgreich registriert" ,
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+    "list": {
+        "_id": "65b0ed15ee1cb12b2614b381",
+        "title": "Studium",
+        "todos": [
+            "65b0ed15ee1cb12b2614b383",
+            "65b0ed15ee1cb12b2614b384"
+        ],
+        "user": "65b0ed15ee1cb12b2614b37f",
+        "__v": 1
+    }
+}
+```
+
+
+### POST /api/lists
+Erstelle eine neue *liste*.
+#### URL
+`http://localhost:81/api/lists`
+#### Request Header
+```json
+{
+    "Authorization": "Bearer TOKEN"
+}
+```
+#### Request Body
+```json
+{
+    "title": "NeueListe"
+}
+```
+#### Response
+```json
+{
+    "status": "Success",
+    "List": {
+        "title": "NeueListe",
+        "todos": [],
+        "user": "65b0ed15ee1cb12b2614b37f",
+        "_id": "65b0eedcee1cb12b2614b392",
+        "__v": 0
+    }
+}
+```
+
+
+### PUT /api/lists/:id
+Editiere den Namen einer existierenden *liste* oder ordne ihre *todos* neu.
+#### URL
+`http://localhost:81/api/lists/:id`
+#### Request Parameters
+`{{id}}`
+#### Request Header
+```json
+{
+    "Authorization": "Bearer TOKEN"
+}
+```
+#### Request Body
+```json
+{
+    "title": "NeuerTitel",
+    "todoId": "65b0ed15ee1cb12b2614b384",
+    "index": 0
+}
+```
+#### Response
+```json
+{
+    "status": "Success",
+    "message": "Todo moved to 0"
+}
+```
+
+
+### DELETE /api/lists/:id
+Lösche eine existierende *liste* und die dazugehörigen *todos*.
+#### URL
+`http://localhost:81/api/lists/:id`
+#### Request PARAMETS
+`{{id}}`
+#### Request Header
+```json
+{
+    "Authorization": "Bearer TOKEN"
+}
+```
+#### Response
+```json
+{
+    "status": "Success",
+    "message": "List deleted along with associated Todos"
+}
+```
+
+
+
+
+### Todo Ressourcen
+  - [GET api/todos](#get-apitodos)
+  - [GET api/lists/:id](#get-apitodosid)
+  - [POST api/todos](#post-apitodos)
+  - [PUT api/lists/:id](#put-apitodosid)
+  - [PATCH api/lists/:id](#patch-apitodosid)
+  - [DELETE api/lists/:id](#delete-apitodos)
+
+### GET /api/todos
+Listet alle *todos* auf.
+#### URL
+`http://localhost:81/api/todos`
+#### Request Header
+```json
+{
+    "Authorization": "Bearer TOKEN"
+}
+```
+#### Response
+```json
+{
+    "status": "Success",
+    "todo": [
+        {
+            "_id": "65b0ed15ee1cb12b2614b379",
+            "title": "Einkaufen",
+            "completed": false,
+            "list": "65b0ed15ee1cb12b2614b377",
+            "user": "65b0ed15ee1cb12b2614b375",
+            "__v": 0
+        },
+        {
+            "_id": "65b0ed15ee1cb12b2614b37a",
+            "title": "Wäsche machen",
+            "completed": false,
+            "list": "65b0ed15ee1cb12b2614b377",
+            "user": "65b0ed15ee1cb12b2614b375",
+            "__v": 0
+        }
+    ]
+}
+```
+
+
+### GET /api/lists/:id
+Hole eine spezifische *todo*.
+#### URL
+`http://localhost:81/api/todos/:id`
+#### Request Parameters
+`{{id}}`
+#### Request Header
+```json
+{
+    "Authorization": "TOKEN"
+}
+```
+#### Response
+```json
+{
+    "status": "Success",
+    "todo": [
+        {
+            "_id": "65b0ed15ee1cb12b2614b379",
+            "title": "Einkaufen",
+            "completed": false,
+            "list": "65b0ed15ee1cb12b2614b377",
+            "user": "65b0ed15ee1cb12b2614b375",
+            "__v": 0
+        },
+        {
+            "_id": "65b0ed15ee1cb12b2614b37a",
+            "title": "Wäsche machen",
+            "completed": false,
+            "list": "65b0ed15ee1cb12b2614b377",
+            "user": "65b0ed15ee1cb12b2614b375",
+            "__v": 0
+        }
+    ]
+}
+```
+
+
+### POST /api/todos
+Erstelle eine neue *todo*.
+#### URL
+`http://localhost:81/api/todos`
+#### Request Header
+```json
+{
+    "Authorization": "Bearer TOKEN"
+}
+```
+#### Request Body
+```json
+{
+    "title": "Testaufgabe beenden",
+    "description": "Dokumentation ergänzen",
+    "list": "65b0ed15ee1cb12b2614b389"
+}
+```
+#### Response
+```json
+{
+    "status": "Success",
+    "Todo": {
+        "title": "Testaufgabe beenden",
+        "description": "Dokumentation ergänzen",
+        "completed": false,
+        "list": "65b0ed15ee1cb12b2614b389",
+        "user": "65b0ed15ee1cb12b2614b375",
+        "_id": "65b0f330ee1cb12b2614b3a0",
+        "__v": 0
+    }
+}
+```
+
+
+### PUT /api/todos/:id
+Editiere eine bestehende *todo*.
+#### URL
+`http://localhost:81/api/todos/:id`
+#### Request Parameters
+`{{id}}`
+#### Request Header
+```json
+{
+    "Authorization": "Bearer TOKEN"
+}
+```
+#### Request Body
+```json
+{
+    "title": "Testaufgabe beenden und abgeben",
+    "description": "Dokumentation ergänzen und drüberlesen",
+    "list": "65b0f51bee1cb12b2614b3a4"
+}
+```
+#### Response
+```json
+{
+    "status": "Success",
+    "todo": {
+        "_id": "65b0f330ee1cb12b2614b3a0",
+        "title": "Testaufgabe beenden und abgeben",
+        "description": "Dokumentation ergänzen und drüberlesen",
+        "completed": false,
+        "list": "65b0f51bee1cb12b2614b3a4",
+        "user": "65b0ed15ee1cb12b2614b375",
+        "__v": 0
+    }
+}
+```
+
+
+### PATCH /api/todos/:id
+Markiere ein *todo* als fertig.
+#### URL
+`http://localhost:81/api/todos/:id`
+#### Request Parameters
+`{{id}}`
+#### Request Header
+```json
+{
+    "Authorization": "Bearer TOKEN"
+}
+```
+#### Response
+```json
+{
+    "status": "Success",
+    "todo": {
+        "_id": "65b0f330ee1cb12b2614b3a0",
+        "title": "Testaufgabe beenden und abgeben",
+        "description": "Dokumentation ergänzen und drüberlesen",
+        "completed": true,
+        "list": "65b0f51bee1cb12b2614b3a4",
+        "user": "65b0ed15ee1cb12b2614b375",
+        "__v": 0
+    }
+}
+```
+
+
+### DELETE /api/todos/:id
+Lösche ein existierendes *todo* und den dazugehörigen Eintrag in der *liste*.
+#### URL
+`http://localhost:81/api/todos/:id`
+#### Request PARAMETS
+`{{id}}`
+#### Request Header
+```json
+{
+    "Authorization": "Bearer TOKEN"
+}
+```
+#### Response
+```json
+{
+    "status": "Success",
+    "message": "Todo deleted"
 }
 ```
