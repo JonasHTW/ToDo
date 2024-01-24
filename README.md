@@ -1,11 +1,11 @@
 # ToDo
 
 ## Index
-* [Voraussetzungen] (#voraussetzungen)
-* [Installation] (#installation)
-* [Schema] (#schema)
-* [Authentifizierung] (#authentifizierung)
-* [Endpunkte] (#endpunkte)
+* [Voraussetzungen](#voraussetzungen)
+* [Installation](#installation)
+* [Schema](#schema)
+* [Authentifizierung](#authentifizierung)
+* [Endpunkte](#endpunkte)
 
 
 ## Voraussetzungen
