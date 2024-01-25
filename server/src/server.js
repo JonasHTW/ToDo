@@ -26,8 +26,6 @@ User.findOne().then(foundUser => {
 })
 
 
-
-
 app.get('/', (req, res) => {
   res.json({
     message: "Willkommen zur API"
