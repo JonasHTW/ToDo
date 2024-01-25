@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: Todo Backend
+  title: Todo
   version: "1.0"
 servers:
   - url: http://localhost:81
