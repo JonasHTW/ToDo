@@ -41,6 +41,8 @@
 - Ein Todo kann zu einer bestimmten Liste gehören und referenziert die Listen-ID (list).
 - Die Todos können auch unabhängig ihrer zugehörigen Listen abgefragt werden.
 
+Alle Anfragen und alle Antworten sind im JSON Format.
+
 
 ## Authentifizierung
 Es können User angelegt (registriert) werden. Dafür werden im Request Body der Anfrage 'email' und 'password' übergeben.
@@ -76,7 +78,8 @@ mit dem Passwort "test" einen validen token erhalten.
 
 
 ## Dokumentation
-Nach starten des Server kann die DOkumentation mit [http://localhost:81/documentation](http://localhost:81/documentation) erreicht werden.
+[https://app.swaggerhub.com/apis/JonasPfeiffer/Todo/1.0](https://app.swaggerhub.com/apis/JonasPfeiffer/Todo/1.0)
+Die Dokumentation kann bei laufendem Server auch mit [http://localhost:81/documentation](http://localhost:81/documentation)erreicht und getestet werden.
 
 ## Beispiele
 #### Basis URL
