@@ -9,7 +9,7 @@ const cors = require("cors");
 const initiateScript = require('./initiate/initiate');
 
 const app = express();
-const port = 81;
+const port = process.env.PORT;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -44,6 +44,6 @@ app.listen(port, () => {
 const yaml = require('yamljs');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = yaml.load(path.resolve(__dirname, '../openapi.yaml'));
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 module.exports = mongoose;

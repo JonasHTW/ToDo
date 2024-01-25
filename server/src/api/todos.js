@@ -39,19 +39,35 @@ router.get('/:id', authenticateToken, (req, res) => {
 
 
 // Füge eine neue Todo hinzu
-router.post('/', authenticateToken, (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
 
     console.log((new Date()).toISOString(), req.method);
 
-    const createdTodo = new Todo({ ...req.body, user: req.userId });
+    try {
+        let list;
+        // Überprüfen, ob die Liste mit der gegebenen ID existiert
+        if (req.body.list) {
+            list = await List.findOne({ _id: req.body.list, user: req.userId });
+            if (!list) {
+                return res.status(404).json({ 'status': 'Error', 'message': 'No list found with the given ID' });
+            }
+        }
 
-    createdTodo.save()
-        .then(savedTodo => {
-            res.status(201).json({ 'status': 'Success', 'Todo': savedTodo });
-        })
-        .catch(error => {
-            res.status(500).json({ 'status': 'Error', 'error': error.message });
-        });
+        // Liste gefunden oder keine List-ID angegeben, Todo erstellen
+        const createdTodo = new Todo({ ...req.body, user: req.userId });
+
+        const savedTodo = await createdTodo.save();
+
+        if (list) {
+            // Wenn eine Liste vorhanden ist, füge die Todo-ID zur Liste hinzu
+            await List.updateOne({ _id: req.body.list }, { $addToSet: { todos: savedTodo._id } });
+        }
+
+        res.status(201).json({ 'status': 'Success', 'Todo': savedTodo });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ 'status': 'Error', 'error': error.message });
+    }
 
 });
 
@@ -69,17 +85,17 @@ router.put('/:id', authenticateToken, async (req, res) => {
         if (updateData.list) {
             // Überprüfe, ob die Liste mit der übergebenen ID existiert
             const newList = await List.findOne({ _id: updateData.list, user: req.userId });
-    
+
             if (!newList) {
-                return res.status(404).json({ status: 'Error', 'message': 'List not found' });
+                return res.status(404).json({ 'status': 'Error', 'message': 'List not found' });
             }
-    
-            // Verwende $pull, um die Todo-Referenz direkt aus dem Array zu entfernen
+
+            // Entferne die Todo-Referenz direkt aus dem Array
             await List.updateMany(
                 { todos: todoId },
                 { $pull: { todos: todoId } }
             );
-    
+
             // Füge die Todo-Referenz zur neuen Liste hinzu
             await List.updateOne({ _id: updateData.list }, { $addToSet: { todos: todoId } });
         }
@@ -102,11 +118,11 @@ router.patch('/:id', authenticateToken, (req, res) => {
 
     Todo.findOneAndUpdate({ _id: todoId, user: req.userId }, { completed: true }, { new: true })
         .then(updatedTodo => {
-            res.status(200).json({ status: 'Success', 'Todo': updatedTodo });
+            res.status(200).json({ 'status': 'Success', 'Todo': updatedTodo });
         })
         .catch(
             error => {
-                res.status(500).json({ status: 'Error', 'error': error });
+                res.status(500).json({ 'status': 'Error', 'error': error });
             })
 
 });

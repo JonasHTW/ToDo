@@ -12,7 +12,7 @@ router.get('/', authenticateToken, (req, res) => {
 
     List.find({ user: req.userId })
         .then(lists => {
-            res.status(200).json({ 'status': 'Success', 'list': lists });
+            res.status(200).json({ 'status': 'Success', 'lists': lists });
         })
         .catch(error => {
             res.status(500).json({ 'status': 'Error', 'error': error.message });
@@ -108,9 +108,6 @@ router.put('/:listId', async (req, res) => {
     const { _id, todos, user, ...updateData } = req.body;
 
     if (todoId && index !== undefined) {
-        // Verbiete das Verändern von _id, todos und user
-        const { _id, todos, user, ...updateData } = req.body;
-
         // Verändere die Reihenfolge des Arrays (neu anordnen)
         try {
             const list = await List.findOne({ _id: listId });
@@ -139,7 +136,7 @@ router.put('/:listId', async (req, res) => {
         }
     }
 
-    // Überprüfe, ob "title" im req.body vorhanden ist
+    // Wenn "title" vorhanden ist
     if ('title' in req.body) {
         try {
             const updatedList = await List.findOneAndUpdate(
