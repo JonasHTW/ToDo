@@ -78,7 +78,7 @@ mit dem Passwort "test" einen validen token erhalten.
 
 
 ## Dokumentation
-[https://app.swaggerhub.com/apis/JonasPfeiffer/Todo/1.0](https://app.swaggerhub.com/apis/JonasPfeiffer/Todo/1.0)
+[https://app.swaggerhub.com/apis/JonasPfeiffer/Todo/1.0](https://app.swaggerhub.com/apis/JonasPfeiffer/Todo/1.0)<br>
 Die Dokumentation kann bei laufendem Server auch mit [http://localhost:81/documentation](http://localhost:81/documentation)erreicht und getestet werden.
 
 ## Beispiele
