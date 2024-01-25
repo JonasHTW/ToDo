@@ -34,6 +34,7 @@
 - Jede Liste hat einen Titel (title).
 - Eine Liste gehört zu einem bestimmten Benutzer und referenziert die Benutzer-ID (user).
 - Jede Liste enthält eine Liste von Todos, die als IDs referenziert werden (todos).
+- Die Listen entsprechen einer Kategorie ("Studium", "Einkauf") und kategorisieren so die Todos.
 
 ### Aufgaben (Todo)
 - Jedes Todo hat eine eindeutige Todo-ID (_id).
