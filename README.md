@@ -76,7 +76,7 @@ mit dem Passwort "test" einen validen token erhalten.
 
 
 ## Dokumentation
-Link muss noch erstellt und eingefügt werden.
+Nach starten des Server kann die DOkumentation mit [http://localhost:81/documentation](http://localhost:81/documentation) erreicht werden.
 
 ## Beispiele
 #### Basis URL
