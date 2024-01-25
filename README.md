@@ -271,7 +271,7 @@ Editiere den Namen einer existierenden *liste* oder ordne ihre *todos* neu.
 Lösche eine existierende *liste* und die dazugehörigen *todos*.
 #### URL
 `http://localhost:81/api/lists/:id`
-#### Request PARAMETS
+#### Request Parameters
 `{{id}}`
 #### Request Header
 ```json
@@ -477,7 +477,7 @@ Markiere ein *todo* als fertig.
 Lösche ein existierendes *todo* und den dazugehörigen Eintrag in der *liste*.
 #### URL
 `http://localhost:81/api/todos/:id`
-#### Request PARAMETS
+#### Request Parameters
 `{{id}}`
 #### Request Header
 ```json
