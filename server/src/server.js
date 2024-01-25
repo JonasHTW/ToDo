@@ -9,7 +9,7 @@ const cors = require("cors");
 const initiateScript = require('./initiate/initiate');
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());

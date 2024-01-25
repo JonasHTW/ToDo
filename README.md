@@ -11,7 +11,7 @@
 ## Voraussetzungen
 
 - [node & npm](http://nodejs.org)
-- [MongoDB](https://www.mongodb.com/): Es muss lokal eine Instanz auf dem Port 27017 laufen. (siehe .env 'URL');
+- [MongoDB](https://www.mongodb.com/try/download/community): Es muss lokal eine Instanz auf dem (default)Port 27017 laufen. (siehe .env 'URL');
 
 
 ## Installation
