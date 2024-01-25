@@ -6,6 +6,7 @@
 * [Schema](#schema)
 * [Authentifizierung](#authentifizierung)
 * [Endpunkte](#endpunkte)
+* [Bonusaufgabe](#bonusaufgabe)
 
 
 ## Voraussetzungen
@@ -492,3 +493,7 @@ Lösche ein existierendes *todo* und den dazugehörigen Eintrag in der *liste*.
     "message": "Todo deleted"
 }
 ```
+
+
+## Bonusaufgabe
+Bisher leider nicht implementiert. Die Relation User->hat->Liste->hat->Todos erschwert es, die Konsistenz der Daten aufrecht zu erhalten wenn eine Todo einen weiteren Eintrag einer userId in "user" erhält. Demzufolge wäre vorerst nur das Teilen einer Todo möglich, welcher keiner eigenen Liste zugeordnet ist. (Ansonsten würde "list" in einer Todo auf die listId eines anderen Users zeigen, welche man selbst nicht abrufen kann.)
